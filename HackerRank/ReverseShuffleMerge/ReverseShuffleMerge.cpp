@@ -73,32 +73,20 @@ bool ReverseShuffleMerge::isLexicographicallySmall(string s)
 
 string ReverseShuffleMerge::getLexicographicallySmallest(vector<string> stringVector)
 {
-    string currentSmallestStr;
-    int currentSmallestDiff;
-    int diff; 
+    string currentSmallestString = stringVector[0];
     
     for(string one : stringVector)
     {
         if(isLexicographicallySmall(one))
         {
-            diff = 0;
-
-            for(size_t index = 1; index < one.size(); index++)
+            if( one < currentSmallestString)
             {
-                diff = one[index] - one[index-1] + diff;
-            }
-
-            diff = one[0] + diff;
-
-            if(diff < currentSmallestDiff)
-            {
-                currentSmallestStr = one;
-                currentSmallestDiff = diff;
+                currentSmallestString = one;
             }
         }
     }
     
-    return currentSmallestStr;
+    return currentSmallestString;
 }
 
 vector<string> ReverseShuffleMerge::mergeListWithString(vector<string> stringVector, string str)

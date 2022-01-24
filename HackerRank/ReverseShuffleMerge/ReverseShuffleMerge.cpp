@@ -15,13 +15,16 @@ using namespace std;
 
 vector<string> ReverseShuffleMerge::shuffle(string s)
 {
+    unordered_set<string> resultSet;
     vector<string> result;
 
     do
     {
-        result.push_back(s);
+        resultSet.insert(s);
 
     } while(next_permutation(s.begin(), s.end()));
+
+    result.assign(resultSet.begin(), resultSet.end());
     
     return result;
 }
@@ -43,12 +46,15 @@ vector<string> ReverseShuffleMerge::merge(string s1, string s2)
 vector<string> ReverseShuffleMerge::combine(string s, int n)
 {
     vector<string> temp = shuffle(s);
+    unordered_set<string> resultSet;
     vector<string> result;
     
     for(string each : temp)
     {
-        result.push_back(each.substr(0, n));
+        resultSet.insert(each.substr(0, n));
     }
+
+    result.assign(resultSet.begin(), resultSet.end());
     
     return result;
 }
@@ -105,35 +111,48 @@ vector<string> ReverseShuffleMerge::mergeListWithString(vector<string> stringVec
 string ReverseShuffleMerge::reverseShuffleMerge(string inputStr)
 {
     string result;
-    vector<string> lastStage;
-    vector<string> subStringRaw = combine(inputStr, inputStr.size() / 2);
-    vector<string> tempStage;
+    unordered_set<string> lastStageSet;
+    vector<string> lastStageVector;
+    unordered_set<string> tempStage;
 
-    for(string each : subStringRaw)
     {
-        if(isLexicographicallySmall(each))
+        vector<string> subStringRaw = combine(inputStr, inputStr.size() / 2);
+
+        for(string each : subStringRaw)
         {
-            tempStage.push_back(each);
+            if(isLexicographicallySmall(each))
+            {
+                tempStage.insert(each);
+            }
         }
     }
 
+
     for(string one : tempStage)
     {
-        vector<string> temp = mergeListWithString(shuffle(one), reverse(one));
+        unordered_set<string> tempSet;
+
+        {
+            vector<string> tempVector = mergeListWithString(shuffle(one), reverse(one));
+
+            tempSet.insert(begin(tempVector), end(tempVector));
+        }
         
-        for(string oneTemp : temp)
+        for(string oneTemp : tempSet)
         {
             size_t found = oneTemp.find(one);
 
             if(found!=string::npos)
             {
-                lastStage.push_back(one);
+                lastStageSet.insert(one);
             }
         }
         
     }
 
-    result = getLexicographicallySmallest(lastStage);
+    lastStageVector.assign(begin(lastStageSet), end(lastStageSet));
+
+    result = getLexicographicallySmallest(lastStageVector);
     
     return result;
 }

@@ -16,6 +16,8 @@
 #include <vector>
 #include <ctype.h>
 #include <algorithm>
+#include <set>
+#include <unordered_set>
 
 namespace HackerRank
 {

@@ -32,7 +32,7 @@ namespace HackerRank
          * @brief Construct a new object
          * 
          */
-        ReverseShuffleMerge();
+        ReverseShuffleMerge() = default;
 
         /**
          * @brief Destroy the object
@@ -48,9 +48,11 @@ namespace HackerRank
 
         vector<string> combine(string, int);
 
-        bool isSmall(string);
+        bool isLexicographicallySmall(string);
 
-        vector<string> mergeList(string, vector<string>);
+        string getLexicographicallySmallest(vector<string>);
+
+        vector<string> mergeListWithString(vector<string>, string);
 
         string reverseShuffleMerge(string);
 

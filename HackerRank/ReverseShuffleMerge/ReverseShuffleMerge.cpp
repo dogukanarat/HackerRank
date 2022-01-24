@@ -17,8 +17,8 @@ vector<string> ReverseShuffleMerge::shuffle(string s)
 {
     vector<string> result;
 
-    do {
-
+    do
+    {
         result.push_back(s);
 
     } while(next_permutation(s.begin(), s.end()));
@@ -42,42 +42,23 @@ vector<string> ReverseShuffleMerge::merge(string s1, string s2)
 
 vector<string> ReverseShuffleMerge::combine(string s, int n)
 {
+    vector<string> temp = shuffle(s);
     vector<string> result;
     
-    if( n == 0)
+    for(string each : temp)
     {
-        // nothing
-    }
-    else if(n == 1)
-    {
-        for(int i = 0; i < s.size(); i++)
-        {
-            result.push_back(&s[i]);
-        }
-    }
-    else if(n > 0)
-    {
-        for(int i = 0; i < s.size(); i++)
-        {
-            const char t = s[i];
-            string st = s.erase(i, 1);
-            vector<string> temp = combine(st, n - 1);
-            for(auto it = temp.begin(); it != temp.end(); it++)
-            {
-                result.push_back(string(&t) + *it);
-            } 
-        }
+        result.push_back(each.substr(0, n));
     }
     
     return result;
 }
 
-bool ReverseShuffleMerge::isSmall(string s)
+bool ReverseShuffleMerge::isLexicographicallySmall(string s)
 {
     bool result = true;
     int diff; 
     
-    for(int index = 1; index < s.size(); index++)
+    for(size_t index = 1; index < s.size(); index++)
     {
         diff = s[index] - s[index-1];
         if(diff < 0)
@@ -86,43 +67,85 @@ bool ReverseShuffleMerge::isSmall(string s)
             break;
         }
     }
-    
+
     return result;
 }
 
-vector<string> ReverseShuffleMerge::mergeList(string str, vector<string> list)
+string ReverseShuffleMerge::getLexicographicallySmallest(vector<string> stringVector)
+{
+    string currentSmallestStr;
+    int currentSmallestDiff;
+    int diff; 
+    
+    for(string one : stringVector)
+    {
+        if(isLexicographicallySmall(one))
+        {
+            diff = 0;
+
+            for(size_t index = 1; index < one.size(); index++)
+            {
+                diff = one[index] - one[index-1] + diff;
+            }
+
+            diff = one[0] + diff;
+
+            if(diff < currentSmallestDiff)
+            {
+                currentSmallestStr = one;
+                currentSmallestDiff = diff;
+            }
+        }
+    }
+    
+    return currentSmallestStr;
+}
+
+vector<string> ReverseShuffleMerge::mergeListWithString(vector<string> stringVector, string str)
 {
     vector<string> result; 
     
-    for(auto eStr : list)
+    for(auto one : stringVector)
     {
-        vector<string> temp = merge(str, eStr);
+        vector<string> temp = merge(str, one);
         result.insert(end(result), begin(temp), end(temp));
     }
     
     return result;
 }
 
-string ReverseShuffleMerge::reverseShuffleMerge(string s)
+string ReverseShuffleMerge::reverseShuffleMerge(string inputStr)
 {
     string result;
-    vector<string> listSubStr = combine(s, s.size() / 2);
-    
-    for(string subStr : listSubStr)
+    vector<string> lastStage;
+    vector<string> subStringRaw = combine(inputStr, inputStr.size() / 2);
+    vector<string> tempStage;
+
+    for(string each : subStringRaw)
     {
-        if(isSmall(subStr))
+        if(isLexicographicallySmall(each))
         {
-            vector<string> subList = mergeList(reverse(subStr), shuffle(subStr));
-            
-            for(string sStr : subList)
-            {
-                if(sStr == subStr)
-                {
-                    result = subStr;
-                }
-            }
+            tempStage.push_back(each);
         }
     }
+
+    for(string one : tempStage)
+    {
+        vector<string> temp = mergeListWithString(shuffle(one), reverse(one));
+        
+        for(string oneTemp : temp)
+        {
+            size_t found = oneTemp.find(one);
+
+            if(found!=string::npos)
+            {
+                lastStage.push_back(one);
+            }
+        }
+        
+    }
+
+    result = getLexicographicallySmallest(lastStage);
     
     return result;
 }
